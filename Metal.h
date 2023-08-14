@@ -1,14 +1,19 @@
 #ifndef RAYTRACING_METAL_H
 #define RAYTRACING_METAL_H
 
-
-#include "Vec3.h"
 #include "Material.h"
-
-Vec3 reflect(const Vec3& vec, const Vec3 &normal);
+#include "Color.h"
+#include "Ray.h"
 
 class Metal : public Material {
-    Vec3 albedo;
+public:
+    Metal(const Color& a, double f);
+    bool scatter(const Ray& r_in, const Collision& collision, Color& attenuation, Ray& scattered)
+    const override;
+
+private:
+    Color albedo;
+    double fuzz;
 };
 
 

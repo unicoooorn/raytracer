@@ -1,22 +1,36 @@
 #include "Scene.h"
+#include "Opaque.h"
+
+#include <memory>
+#include <vector>
+
+using std::shared_ptr;
+using std::make_shared;
+
+std::vector<shared_ptr<Opaque>> objects;
 
 Scene::Scene() = default;
 
-Scene::Scene(Opaque **l, int n) {
-    objects = l;
-    size = n;
-};
+Scene::Scene(shared_ptr<Opaque> object) { add(object); }
 
-bool Scene::collide(const Ray& ray, double min_param, double max_param, Collision &collision) const {
+void Scene::clear() { objects.clear(); }
+
+void Scene::add(const shared_ptr<Opaque>& object) {
+    objects.push_back(object);
+}
+
+bool Scene::collide(const Ray& ray, Boundaries bounds, Collision& collision) const {
     Collision t_collision;
-    bool is_colliding = false;
-    double param = max_param;   // param to relax
-    for (int i = 0; i < size; i++) {
-        if (objects[i]->collide(ray, min_param, param, t_collision)) {
-            is_colliding = true;
-            param = t_collision.parameter;
+    bool is_collided = false;
+    auto closest_collision_parameter = bounds.max;
+
+    for (const auto& object : objects) {
+        if (object->collide(ray, Boundaries(bounds.min, closest_collision_parameter), t_collision)) {
+            is_collided = true;
+            closest_collision_parameter = t_collision.parameter;
             collision = t_collision;
         }
     }
-    return is_colliding;
+
+    return is_collided;
 }

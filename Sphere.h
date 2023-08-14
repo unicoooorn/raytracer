@@ -3,15 +3,16 @@
 
 #include "Opaque.h"
 
-
-class Sphere: public Opaque {
-private:
-    Vec3 center;
-    double radius{};
+class Sphere : public Opaque {
 public:
-    Sphere();
-    Sphere(Vec3 center, double r);
-    bool collide(const Ray& ray, double min_param, double max_param, Collision& collision) const override;
+    Sphere(Point t_center, double t_radius, shared_ptr<Material> t_material);
+
+    bool collide(const Ray& ray, Boundaries bounds, Collision& collision) const override;
+
+private:
+    Point center;
+    double radius;
+    shared_ptr<Material> mat;
 };
 
 

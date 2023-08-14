@@ -1,19 +1,22 @@
 #ifndef RAYTRACER_RAY_H
 #define RAYTRACER_RAY_H
 
-#include "Vec3.h"
-
+#include "Vec.h"
 
 class Ray {
-    Vec3 A;
-    Vec3 B;
 public:
     Ray();
-    Ray(const Vec3& a, const Vec3& b);
-    Vec3 origin() const;
-    Vec3 direction() const;
-    Vec3 point_at_parameter(double t) const;
-};
 
+    Ray(const Point& origin, const Vec& direction);
+
+    [[nodiscard]] Point origin() const;
+    [[nodiscard]] Vec direction() const;
+
+    [[nodiscard]] Point at(double t) const;
+
+private:
+    Point orig;
+    Vec dir;
+};
 
 #endif //RAYTRACER_RAY_H

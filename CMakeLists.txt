@@ -4,13 +4,18 @@ PROJECT(RayTracing)
 
 set (CMAKE_CXX_STANDARD 20)
 
-ADD_EXECUTABLE(${PROJECT_NAME} main.cpp Vec3.h Vec3.cpp Ray.h Ray.cpp
-        Sphere.cpp
-        Scene.cpp
+ADD_EXECUTABLE(${PROJECT_NAME} main.cpp Vec.h Vec.cpp Color.h
+        Color.cpp
         View.h
-        View.cpp
         Material.h
-        Matte.h
+        Boundaries.cpp
+        Collision.cpp
         Matte.cpp
         Metal.h
-        Metal.cpp)
+        Metal.cpp
+        Transparent.h
+        Transparent.cpp
+        Ray.cpp
+        Scene.cpp
+        Sphere.cpp
+        View.cpp)

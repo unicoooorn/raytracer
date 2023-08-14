@@ -1,38 +1,31 @@
 #include "Sphere.h"
 #include <cmath>
+#include <utility>
 
-Sphere::Sphere() = default;
+Sphere::Sphere(Point t_center, double t_radius, shared_ptr<Material> t_material) : center(t_center), radius(t_radius), mat(std::move(t_material)) {}
 
-Sphere::Sphere(Vec3 center, double radius) : center(center), radius(radius) {};
+bool Sphere::collide(const Ray& ray, Boundaries bounds, Collision& collision) const {
+    Vec oc = ray.origin() - center;
+    auto a = ray.direction().length_squared();
+    auto half_b = dot_product(oc, ray.direction());
+    auto c = oc.length_squared() - radius*radius;
 
+    auto discriminant = half_b*half_b - a*c;
+    if (discriminant < 0) return false;
+    auto sqrtd = sqrt(discriminant);
 
-bool Sphere::collide(const Ray &ray, double min_param, double max_param, Collision &collision) const {
-    Vec3 oc = ray.origin() - center;
-    // dot((direction(parameter) - C), (direction(parameter) - C)) = R*R
-    // dot((A + parameter*B - C), (A + parameter*B - C)) = R*R
-    // parameter*parameter*dot(B, B) + 2*parameter*dot(A-C, A-C) + dot(C, C) - R*R=0
-    // parameter^2 * a + 2t*b + c = 0
-    // solve quadratic equation
-    double a = dot(ray.direction(), ray.direction());
-    double b = 2.0 * dot(oc, ray.direction());
-    double c = dot(oc, oc) - radius * radius;
-    double discriminant = b * b - 4.0 * a * c;
-    if (discriminant > 0) {
-        double x1 = (-b - sqrt(discriminant)) / (2.0 * a);
-        if (x1 < max_param && x1 > min_param) {
-            collision.parameter = x1;
-            collision.direction = ray.point_at_parameter(collision.parameter);
-            collision.normal = (collision.direction - center) / radius;
-            return true;
-        }
-
-        double x2 = (-b + sqrt(discriminant)) / (2.0 * a);
-        if (x2 < max_param && x2 > min_param) {
-            collision.parameter = x2;
-            collision.direction = ray.point_at_parameter(collision.parameter);
-            collision.normal = (collision.direction - center) / radius;
-            return true;
-        }
+    auto root = (-half_b - sqrtd) / a;
+    if (!bounds.strictly_contains(root)) {
+        root = (-half_b + sqrtd) / a;
+        if (!bounds.strictly_contains(root))
+            return false;
     }
-    return false;
+
+    collision.parameter = root;
+    collision.point = ray.at(collision.parameter);
+    Vec outward_normal = (collision.point - center) / radius;
+    collision.set_outside_normal(ray, outward_normal);
+    collision.material = mat;
+
+    return true;
 }

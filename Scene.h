@@ -3,14 +3,25 @@
 
 #include "Opaque.h"
 
-class Scene: public Opaque{
-    int size;
-    Opaque **objects;
-public:
-    Scene();
-    Scene(Opaque **l , int n);
-    bool collide(const Ray& ray, double min_param, double max_param, Collision& collision) const override;
-};
+#include <memory>
+#include <vector>
 
+using std::shared_ptr;
+using std::make_shared;
+
+class Scene : public Opaque {
+public:
+    std::vector<shared_ptr<Opaque>> objects;
+
+    Scene();
+
+    explicit Scene(shared_ptr<Opaque> object);
+
+    void clear();
+
+    void add(const shared_ptr<Opaque>& object);
+
+    bool collide(const Ray& ray, Boundaries bounds, Collision& collision) const override;
+};
 
 #endif //RAYTRACING_SCENE_H

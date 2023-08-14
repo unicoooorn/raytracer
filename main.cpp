@@ -1,62 +1,33 @@
-#include <iostream>
-#include "Vec3.h"
 #include "Ray.h"
-#include "Opaque.h"
-#include "Sphere.h"
-#include "Matte.h"
 #include "Scene.h"
+#include "Sphere.h"
+#include "Material.h"
 #include "View.h"
-
-const int SCREEN_HEIGHT = 100;
-const int SCREEN_WIDTH = 200;
-const int ANTIALISING_CYCLES = 200;
-const double BEAM_CONST = 255.99;
-
-Vec3 trace(const Ray& r, Opaque *world) {
-    Collision rec;
-    if (world->collide(r, 0.0, MAXFLOAT, rec)) {
-        Vec3 target = rec.direction + rec.normal + get_random_direction();
-        return 0.5 * trace(Ray(rec.direction, target - rec.direction), world);
-    } else {
-        Vec3 unit_direction = unit_vector(r.direction());
-        double t = 0.5 * (unit_direction.y() + 1.0);
-        return (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
-    }
-}
-
-Vec3 calculate_pixel_color(int i, int j, Opaque *opaque_objects, View *view) {
-    Vec3 color(0, 0, 0);
-    // antialiasing
-    for (int s = 0; s < ANTIALISING_CYCLES; s++) {
-        float u = float(i + drand48())/ float(SCREEN_WIDTH);
-        float v = float(j + drand48()) / float(SCREEN_HEIGHT);
-        Ray r = view->get_ray(u, v);
-        color += trace(r, opaque_objects);
-    }
-    color /= double(ANTIALISING_CYCLES);
-
-    color = Vec3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));    // slight re-shading
-
-    int red = int(BEAM_CONST * color.r());
-    int green = int(BEAM_CONST * color.g());
-    int blue = int(BEAM_CONST * color.b());
-
-    std::cout << red << " " << green << " " << blue << "\n";
-}
+#include "Utility.h"
+#include "Matte.h"
+#include "Transparent.h"
+#include "Metal.h"
 
 int main() {
-    std::cout << "P3\n" << SCREEN_WIDTH << " " << SCREEN_HEIGHT << "\n255\n";
+    Scene world;
 
-    Opaque *objects[2] = {
-            new Sphere(Vec3(0, 0, -1), 0.5),
-            new Sphere(Vec3(0, -100.5, -1), 100),
-    };
-    Opaque *world = new Scene(objects, 2);
-    View *view = new View();
+    auto material_ground = make_shared<Matte>(Color(0.8, 0.8, 0.0));
+    auto material_center = make_shared<Matte>(Color(0.1, 0.2, 0.5));
+    auto material_left   = make_shared<Transparent>(1.5);
+    auto material_right  = make_shared<Metal>(Color(0.8, 0.6, 0.2), 0.0);
 
-    for (int j = SCREEN_HEIGHT - 1; j >= 0; j--) {
-        for (int i = 0; i < SCREEN_WIDTH; i++) {
-            calculate_pixel_color(i, j, world, view);
-        }
-    }
+    world.add(make_shared<Sphere>(Point(0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<Sphere>(Point(0, 0, -1.0), 0.5, material_center));
+    world.add(make_shared<Sphere>(Point(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.add(make_shared<Sphere>(Point(-1.0, 0.0, -1.0), -0.4, material_left));
+    world.add(make_shared<Sphere>(Point(1.0, 0.0, -1.0), 0.5, material_right));
+
+    View view;
+
+    view.screen_ratio = 16.0 / 9.0;
+    view.screen_width  = 400;
+    view.aa_samples_count = 100;
+    view.raytracing_depth = 50;
+
+    view.render(world);
 }

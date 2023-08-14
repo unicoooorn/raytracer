@@ -1,16 +1,19 @@
 #ifndef RAYTRACING_MATTE_H
 #define RAYTRACING_MATTE_H
 
+#include "Ray.h"
+#include "Color.h"
 #include "Material.h"
 
-Vec3 get_random_direction();
-
 class Matte : public Material {
-    Vec3 reflectance;
 public:
-    explicit Matte(const Vec3 & a);
-    bool diffuse(const Ray& ray, const Collision& collision, Vec3& attenuation, Ray& diffused) const override;
-};
+    explicit Matte(const Color& a);
 
+    bool scatter(const Ray& r_in, const Collision& collision, Color& attenuation, Ray& scattered)
+    const override;
+
+private:
+    Color reflectance;
+};
 
 #endif //RAYTRACING_MATTE_H
