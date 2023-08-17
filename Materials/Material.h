@@ -1,10 +1,10 @@
 #ifndef RAYTRACING_MATERIAL_H
 #define RAYTRACING_MATERIAL_H
 
-#include "Utility.h"
-#include "Ray.h"
-#include "Color.h"
-#include "Opaque.h"
+#include "../Utility/Utility.h"
+#include "../Core/Ray.h"
+#include "../Core/Color.h"
+#include "../Objects/Opaque.h"
 
 class Material {
 public:

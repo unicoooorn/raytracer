@@ -137,3 +137,11 @@ Vec refract(const Vec &uv, const Vec &n, double indexes_ratio) {
     Vec r_out_parallel = -sqrt(fabs(1.0 - r_out_perp.length_squared())) * n;
     return r_out_perp + r_out_parallel;
 }
+
+Vec random_in_unit_disk() {
+    while (true) {
+        auto p = Vec(random_double(-1,1), random_double(-1,1), 0);
+        if (p.length_squared() < 1)
+            return p;
+    }
+}

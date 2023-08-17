@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
-#include "Utility.h"
+#include "../Utility/Utility.h"
 
 using std::sqrt;
 
@@ -72,5 +72,7 @@ Vec get_random_unit_vector_in_hemisphere(const Vec& normal);
 Vec reflect(const Vec& v, const Vec& n) ;
 
 Vec refract(const Vec& uv, const Vec& n, double indexes_ratio);
+
+Vec random_in_unit_disk();
 
 #endif //RAYTRACER_VEC3_H

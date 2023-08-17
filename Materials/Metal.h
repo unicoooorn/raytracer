@@ -2,8 +2,8 @@
 #define RAYTRACING_METAL_H
 
 #include "Material.h"
-#include "Color.h"
-#include "Ray.h"
+#include "../Core/Color.h"
+#include "../Core/Ray.h"
 
 class Metal : public Material {
 public:

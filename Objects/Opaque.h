@@ -1,10 +1,10 @@
 #ifndef RAYTRACING_OPAQUE_H
 #define RAYTRACING_OPAQUE_H
 
-#include "Ray.h"
-#include "Utility.h"
-#include "Boundaries.h"
-#include "Collision.h"
+#include "../Core/Ray.h"
+#include "../Utility/Utility.h"
+#include "../Utility/Boundaries.h"
+#include "../Core/Collision.h"
 
 class Opaque {
 public:

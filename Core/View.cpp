@@ -1,5 +1,5 @@
 #include "View.h"
-#include "Material.h"
+#include "../Materials/Material.h"
 
 void View::render(const Opaque &world) {
     init();
@@ -25,21 +25,27 @@ void View::init() {
     screen_height = static_cast<int>(screen_width / screen_ratio);
     screen_height = (screen_height < 1) ? 1 : screen_height;
 
-    screen_center = Point(0, 0, 0);
+    double fov_in_radians = degrees_to_radians(vertical_fov);
+    double viewport_height_unit_dist = 2 * tan(fov_in_radians / 2);
+    double viewport_height = 2 * viewport_height_unit_dist * focus_dist;
+    double viewport_width = viewport_height * (static_cast<double>(screen_width) / screen_height);
 
-    auto focal_length = 1.0;
-    auto viewport_height = 2.0;
-    auto viewport_width = viewport_height * (static_cast<double>(screen_width) / screen_height);
+    basis_w = normalize(point_of_view - looking_at_point);   // parallel to the gaze
+    basis_u = normalize(cross_product(vec_up, basis_w));    // pointing left
+    basis_v = cross_product(basis_w, basis_u);   // pointing up
 
-    auto viewport_u = Vec(viewport_width, 0, 0);
-    auto viewport_v = Vec(0, -viewport_height, 0);
+    Vec viewport_horizontal_right = viewport_width * basis_u;
+    Vec viewport_vertical_up = viewport_height * -basis_v;
 
-    aa_horizontal_delta = viewport_u / screen_width;
-    aa_vertical_delta = viewport_v / screen_height;
+    horizontal_delta_right = viewport_horizontal_right / screen_width;
+    vertical_delta_up = viewport_vertical_up / screen_height;
 
-    auto viewport_upper_left =
-            screen_center - Vec(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
-    screen_lower_left_corner = viewport_upper_left + 0.5 * (aa_horizontal_delta + aa_vertical_delta);
+    Vec viewport_upper_left = point_of_view - (focus_dist * basis_w) - viewport_horizontal_right/2 - viewport_vertical_up/2;
+    viewport_upper_left_corner = viewport_upper_left + 0.5 * (horizontal_delta_right + vertical_delta_up);
+
+    double lens_radius = focus_dist * tan(degrees_to_radians(defocus_angle / 2));
+    lens_u = basis_u * lens_radius;
+    lens_v = basis_v * lens_radius;
 }
 
 Color View::trace(const Ray &r, int depth, const Opaque &world) const {
@@ -53,7 +59,7 @@ Color View::trace(const Ray &r, int depth, const Opaque &world) const {
         Color attenuation;
         if (collision.material->scatter(r, collision, attenuation, scattered))
             return attenuation * trace(scattered, depth-1, world);
-        return Color(0,0,0);
+        return {0,0,0};
     }
 
     Vec unit_direction = normalize(r.direction());
@@ -62,17 +68,22 @@ Color View::trace(const Ray &r, int depth, const Opaque &world) const {
 }
 
 Ray View::get_ray_to(int i, int j) const {
-    auto pixel_center = screen_lower_left_corner + (i * aa_horizontal_delta) + (j * aa_vertical_delta);
+    auto pixel_center = viewport_upper_left_corner + (i * horizontal_delta_right) + (j * vertical_delta_up);
     auto pixel_sample = pixel_center + get_random_close_pixel();
 
-    auto ray_origin = screen_center;
+    auto ray_origin = (defocus_angle <= 0) ? point_of_view : get_lens_sample();
     auto ray_direction = pixel_sample - ray_origin;
 
-    return Ray(ray_origin, ray_direction);
+    return {ray_origin, ray_direction};
+}
+
+Point View::get_lens_sample() const {
+    Vec p = random_in_unit_disk();
+    return point_of_view + (p[0] * lens_u) + (p[1] * lens_v);
 }
 
 Vec View::get_random_close_pixel() const {
     auto px = -0.5 + random_double();
     auto py = -0.5 + random_double();
-    return (px * aa_horizontal_delta) + (py * aa_vertical_delta);
+    return (px * horizontal_delta_right) + (py * vertical_delta_up);
 }

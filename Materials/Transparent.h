@@ -2,8 +2,8 @@
 #define RAYTRACING_TRANSPARENT_H
 
 #include "Material.h"
-#include "Ray.h"
-#include "Collision.h"
+#include "../Core/Ray.h"
+#include "../Core/Collision.h"
 
 class Transparent : public Material {
 public:

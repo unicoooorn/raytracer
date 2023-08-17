@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "Vec.h"
-#include "Boundaries.h"
+#include "../Utility/Boundaries.h"
 
 using Color = Vec;
 
