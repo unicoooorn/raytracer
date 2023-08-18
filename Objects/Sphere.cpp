@@ -25,7 +25,18 @@ bool Sphere::collide(const Ray& ray, Boundaries bounds, Collision& collision) co
     collision.point = ray.at(collision.parameter);
     Vec outward_normal = (collision.point - center) / radius;
     collision.set_outside_normal(ray, outward_normal);
+    get_texture_coords(outward_normal, collision.object_u, collision.object_v);
     collision.material = mat;
 
     return true;
+}
+
+void Sphere::get_texture_coords(const Point& p, double& u, double& v) {
+    // converting space coord to spherical coords
+    double theta = acos(-p.y());
+    double phi = atan2(-p.z(), p.x()) + pi;
+
+    // converting space coord to plain texture coords
+    u = phi / (2*pi);
+    v = theta / pi;
 }

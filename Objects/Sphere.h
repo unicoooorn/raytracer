@@ -13,6 +13,8 @@ private:
     Point center;
     double radius;
     shared_ptr<Material> mat;
+
+    static void get_texture_coords(const Point& p, double& u, double& v);
 };
 
 
