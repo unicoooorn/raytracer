@@ -9,10 +9,13 @@ public:
 
     bool collide(const Ray& ray, Boundaries bounds, Collision& collision) const override;
 
+    [[nodiscard]] BoundingBox get_bounding_box() const override;
+
 private:
     Point center;
     double radius;
     shared_ptr<Material> mat;
+    BoundingBox bbox;
 
     static void get_texture_coords(const Point& p, double& u, double& v);
 };

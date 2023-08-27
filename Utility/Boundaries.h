@@ -19,6 +19,12 @@ public:
 
     [[nodiscard]] double get_closest_num_to(double x) const;
 
+    [[nodiscard]] double size() const;
+
+    [[nodiscard]] Boundaries expand(double delta) const;
+
+    Boundaries(const Boundaries& a, const Boundaries& b);
+
     static const Boundaries empty, universe;
 };
 

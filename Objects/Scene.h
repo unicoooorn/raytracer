@@ -22,6 +22,11 @@ public:
     void add(const shared_ptr<Opaque>& object);
 
     bool collide(const Ray& ray, Boundaries bounds, Collision& collision) const override;
+
+    BoundingBox get_bounding_box() const override;
+
+private:
+    BoundingBox bbox;
 };
 
 #endif //RAYTRACING_SCENE_H

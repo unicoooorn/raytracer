@@ -2,7 +2,10 @@
 #include <cmath>
 #include <utility>
 
-Sphere::Sphere(Point t_center, double t_radius, shared_ptr<Material> t_material) : center(t_center), radius(t_radius), mat(std::move(t_material)) {}
+Sphere::Sphere(Point t_center, double t_radius, shared_ptr<Material> t_material) : center(t_center), radius(t_radius), mat(std::move(t_material)) {
+    auto radius_vec = Vec(radius, radius, radius);
+    bbox = BoundingBox(t_center - radius_vec, t_center + radius_vec);
+}
 
 bool Sphere::collide(const Ray& ray, Boundaries bounds, Collision& collision) const {
     Vec oc = ray.origin() - center;
@@ -39,4 +42,8 @@ void Sphere::get_texture_coords(const Point& p, double& u, double& v) {
     // converting space coord to plain texture coords
     u = phi / (2*pi);
     v = theta / pi;
+}
+
+BoundingBox Sphere::get_bounding_box() const {
+    return bbox;
 }
