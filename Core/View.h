@@ -14,6 +14,7 @@ public:
     Vec horizontal_delta_right;
     Vec vertical_delta_up;
     int raytracing_depth = 10;
+    Color  background;
 
     Point point_of_view = Point(0, 0, -1);
     Point looking_at_point = Point(0, 0, 0);

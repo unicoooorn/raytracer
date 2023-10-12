@@ -6,14 +6,12 @@ double linear_to_gamma(double linear_component)
 }
 
 void write_pixel_ppm(std::ostream &out, Color color, unsigned int sample_count) {
+    auto scale = 1.0 / sample_count;
+    color *= scale;
+
     auto r = color.x();
     auto g = color.y();
     auto b = color.z();
-
-    auto scale = 1.0 / sample_count;
-    r *= scale;
-    g *= scale;
-    b *= scale;
 
     r = linear_to_gamma(r);
     g = linear_to_gamma(g);

@@ -54,17 +54,19 @@ Color View::trace(const Ray &r, int depth, const Opaque &world) const {
 
     Collision collision;
 
-    if (world.collide(r, Boundaries(0.001, infinity), collision)) {
-        Ray scattered;
-        Color attenuation;
-        if (collision.material->scatter(r, collision, attenuation, scattered))
-            return attenuation * trace(scattered, depth-1, world);
-        return {0,0,0};
-    }
+    if (!world.collide(r, Boundaries(0.001, infinity), collision))
+        return background;
 
-    Vec unit_direction = normalize(r.direction());
-    auto a = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
+    Ray scattered;
+    Color attenuation;
+    Color color_from_emission = collision.material->emitted(collision.object_u, collision.object_v, collision.point);
+
+    if (!collision.material->scatter(r, collision, attenuation, scattered))
+        return color_from_emission;
+
+    Color  color_from_scatter = attenuation * trace(scattered, depth-1, world);
+
+    return color_from_emission + color_from_scatter;
 }
 
 Ray View::get_ray_to(int i, int j) const {

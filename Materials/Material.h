@@ -11,7 +11,11 @@ public:
     virtual ~Material() = default;
 
     virtual bool scatter(
-            const Ray& r_in, const Collision& rec, Color& attenuation, Ray& scattered) const = 0;
+            const Ray& ray, const Collision& collision, Color& attenuation, Ray& scattered) const = 0;
+
+    [[nodiscard]] inline virtual Color emitted(double u, double v, const Point& p) const {
+        return {0,0,0};
+    }
 };
 
 #endif //RAYTRACING_MATERIAL_H

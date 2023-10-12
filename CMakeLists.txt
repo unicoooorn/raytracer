@@ -23,4 +23,17 @@ ADD_EXECUTABLE(${PROJECT_NAME} main.cpp Core/Vec.h Core/Vec.cpp Core/Color.h
         Textures/Checkered.h
         Textures/Checkered.cpp
         Textures/Monochrome.h
-        Textures/Monochrome.cpp)
+        Textures/Monochrome.cpp
+        External/stb_image.h
+        Utility/Image.h
+        Utility/Image.cpp
+        Textures/ImageTexture.h
+        Textures/ImageTexture.cpp
+        Optimizations/BoundingBox.h
+        Optimizations/BoundingBox.cpp
+        Optimizations/BoundingVolume.h
+        Optimizations/BoundingVolume.cpp
+        Objects/Square.h
+        Objects/Square.cpp
+        Materials/Light.h
+        Materials/Light.cpp)

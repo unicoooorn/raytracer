@@ -12,13 +12,14 @@ class Collision {
 public:
     Point point;
     Vec normal;
-    bool is_outside;
-    shared_ptr<Material> material;
     double parameter;
 
     // coordinates on object surface
     double object_u;
     double object_v;
+    shared_ptr<Material> material;
+
+    bool is_outside;
 
     void set_outside_normal(const Ray& r, const Vec& unit_outward_normal);
 };

@@ -59,8 +59,8 @@ Vec Vec::random_vec(double min, double max) {
 }
 
 bool Vec::near_zero() const {
-    auto s = 1e-8;
-    return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+    double eps = std::numeric_limits<double>::epsilon();
+    return (fabs(e[0]) < eps) && (fabs(e[1]) < eps) && (fabs(e[2]) < eps);
 }
 
 using Point = Vec;
